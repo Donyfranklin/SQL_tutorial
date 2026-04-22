@@ -1,8 +1,9 @@
-# SQL_tutorial
-Complete Tutorial for SQL
+
+# Click For SQL Tutorial
 
 
 
-# Click the Link For Full SQL Tutorials 
+
+
 
 https://donyfranklin.github.io/SQL_tutorial/
