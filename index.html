@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Complete Guide — From Zero to Query Hero</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #21262d;
+  --bg4: #30363d;
+  --border: rgba(48,54,61,0.8);
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --accent: #58a6ff;
+  --accent2: #79c0ff;
+  --green: #56d364;
+  --amber: #e3b341;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --teal: #39d353;
+  --pink: #ff7b72;
+  --sidebar-w: 280px;
+  --header-h: 60px;
+  --radius: 10px;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+/* ── HEADER ── */
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 1.5rem;
+  z-index: 100;
+  gap: 1rem;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.1rem; font-weight: 700; color: var(--text);
+  text-decoration: none;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #1f6feb, #388bfd);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 600; color: #fff;
+}
+.logo span { color: var(--accent); }
+.header-tagline {
+  font-size: 13px; color: var(--text3);
+  margin-left: 4px;
+  display: none;
+}
+@media(min-width:700px){ .header-tagline { display: block; } }
+
+.header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.badge {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 20px;
+  background: rgba(56,139,253,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(56,139,253,0.3);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: var(--header-h); left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; overflow-x: hidden;
+  padding: 1.25rem 0 2rem;
+  z-index: 50;
+  transition: transform 0.3s;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.nav-section { margin-bottom: 0.25rem; }
+.nav-section-title {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 0.6rem 1.25rem 0.3rem;
+}
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 1.25rem;
+  font-size: 13.5px; color: var(--text2);
+  text-decoration: none; cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active {
+  color: var(--accent); background: rgba(56,139,253,0.08);
+  border-left-color: var(--accent);
+}
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-blue { background: var(--accent); }
+.dot-green { background: var(--green); }
+.dot-amber { background: var(--amber); }
+.dot-red { background: var(--red); }
+.dot-purple { background: var(--purple); }
+.dot-pink { background: var(--pink); }
+
+/* ── MAIN ── */
+main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  padding: 3rem 3rem 5rem;
+  max-width: 960px;
+}
+
+/* ── SECTIONS ── */
+.page-section { margin-bottom: 5rem; }
+.page-section:first-child { padding-top: 0.5rem; }
+
+.section-hero {
+  padding: 2.5rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  position: relative; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.hero-ddl  { background: linear-gradient(135deg, rgba(56,139,253,0.12), rgba(56,139,253,0.04)); }
+.hero-dml  { background: linear-gradient(135deg, rgba(86,211,100,0.12), rgba(86,211,100,0.04)); }
+.hero-cls  { background: linear-gradient(135deg, rgba(227,179,65,0.12), rgba(227,179,65,0.04)); }
+.hero-join { background: linear-gradient(135deg, rgba(188,140,255,0.12), rgba(188,140,255,0.04)); }
+
+.section-hero::before {
+  content: attr(data-label);
+  position: absolute; right: 2rem; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 5rem; font-weight: 700;
+  opacity: 0.04; color: #fff; white-space: nowrap; pointer-events: none;
+  letter-spacing: -0.02em;
+}
+.section-hero h2 {
+  font-size: 1.9rem; font-weight: 700; margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-emoji { font-size: 1.6rem; }
+.section-hero p { color: var(--text2); font-size: 15px; max-width: 560px; }
+.section-tag {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; margin-bottom: 0.8rem;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.tag-blue  { background: rgba(56,139,253,0.15); color: var(--accent2); border: 1px solid rgba(56,139,253,0.25); }
+.tag-green { background: rgba(86,211,100,0.12); color: var(--green); border: 1px solid rgba(86,211,100,0.25); }
+.tag-amber { background: rgba(227,179,65,0.12); color: var(--amber); border: 1px solid rgba(227,179,65,0.25); }
+.tag-purple{ background: rgba(188,140,255,0.12); color: var(--purple); border: 1px solid rgba(188,140,255,0.25); }
+
+/* ── CONCEPT CARDS ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem; margin-bottom: 2rem;
+}
+.concept-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.2rem 1.3rem;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.concept-icon {
+  width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.ci-blue   { background: rgba(56,139,253,0.15); }
+.ci-green  { background: rgba(86,211,100,0.12); }
+.ci-amber  { background: rgba(227,179,65,0.12); }
+.ci-red    { background: rgba(248,81,73,0.12); }
+.ci-purple { background: rgba(188,140,255,0.12); }
+.ci-pink   { background: rgba(255,123,114,0.12); }
+.ci-teal   { background: rgba(57,211,83,0.12); }
+
+.concept-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.concept-card p  { font-size: 12.5px; color: var(--text2); line-height: 1.5; }
+
+/* ── CMD BLOCKS ── */
+.cmd-block {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.cmd-top {
+  padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+.cmd-keyword {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  padding: 4px 12px; border-radius: 6px;
+}
+.kw-blue   { background: rgba(56,139,253,0.2); color: var(--accent2); }
+.kw-green  { background: rgba(86,211,100,0.15); color: var(--green); }
+.kw-amber  { background: rgba(227,179,65,0.15); color: var(--amber); }
+.kw-red    { background: rgba(248,81,73,0.15); color: #ff7b72; }
+.kw-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+
+.cmd-meta { flex: 1; }
+.cmd-title { font-size: 14px; font-weight: 600; }
+.cmd-subtitle { font-size: 12px; color: var(--text3); }
+
+.cmd-body { padding: 1.2rem 1.25rem; }
+
+.analogy {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: rgba(56,139,253,0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-bottom: 1rem;
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+}
+.analogy strong { color: var(--text); }
+
+.warn {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: rgba(248,81,73,0.07);
+  border-left: 3px solid var(--red);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 0.75rem;
+  font-size: 13px; color: #ff9a94; line-height: 1.6;
+}
+.tip {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: rgba(86,211,100,0.07);
+  border-left: 3px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 0.75rem;
+  font-size: 13px; color: #7ee787; line-height: 1.6;
+}
+
+/* ── CODE BLOCK ── */
+.code-wrap {
+  background: #010409;
+  border: 1px solid var(--bg4);
+  border-radius: 8px;
+  margin: 0.75rem 0;
+  overflow: hidden;
+}
+.code-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--bg4);
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.cd1 { background: #f85149; }
+.cd2 { background: #e3b341; }
+.cd3 { background: #56d364; }
+.code-label { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.copy-btn {
+  font-size: 11px; color: var(--text3); cursor: pointer;
+  background: none; border: 1px solid var(--bg4);
+  padding: 3px 10px; border-radius: 5px;
+  font-family: var(--sans);
+  transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--text3); }
+
+.code-wrap pre {
+  font-family: var(--mono); font-size: 13.5px;
+  line-height: 1.9; padding: 1.1rem 1.4rem;
+  overflow-x: auto; color: #c9d1d9;
+  tab-size: 2;
+}
+/* Syntax tokens */
+.kw  { color: #ff7b72; }    /* keywords: SELECT, CREATE... */
+.fn  { color: #d2a8ff; }    /* functions: COUNT, SUM... */
+.col { color: #e3b341; }    /* columns */
+.tbl { color: #79c0ff; }    /* tables */
+.val { color: #a5d6ff; }    /* strings */
+.num { color: #79c0ff; }    /* numbers */
+.cmt { color: #8b949e; font-style: italic; } /* comments */
+.tp  { color: #ff7b72; }    /* data types */
+.op  { color: #c9d1d9; }    /* operators */
+.pk  { color: #56d364; }    /* PRIMARY KEY */
+
+/* ── OUTPUT TABLE ── */
+.output-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text3);
+  margin: 1rem 0 0.5rem;
+}
+.output-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--bg4); }
+.output-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.output-table th {
+  background: var(--bg3); color: var(--text2); font-weight: 500;
+  padding: 9px 14px; text-align: left; font-family: var(--mono); font-size: 12px;
+  border-bottom: 1px solid var(--bg4);
+}
+.output-table td {
+  padding: 8px 14px; border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+}
+.output-table tr:last-child td { border-bottom: none; }
+.output-table tr:hover td { background: rgba(255,255,255,0.02); }
+.null-val { color: var(--text3); font-style: italic; }
+.highlight-row td { background: rgba(56,139,253,0.07) !important; }
+
+/* ── SECTION DIVIDER ── */
+h3.sub {
+  font-size: 1.1rem; font-weight: 600;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+h3.sub::before { content: '§ '; color: var(--text3); font-weight: 400; }
+
+/* ── JOIN DIAGRAM ── */
+.join-diagram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 1rem; margin-bottom: 1rem;
+}
+.join-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.2rem; text-align: center;
+}
+.join-card svg { margin: 0.5rem auto; display: block; }
+.join-card h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
+.join-card p  { font-size: 12px; color: var(--text2); }
+
+/* ── SYNTAX REFERENCE BOX ── */
+.syntax-box {
+  background: var(--bg3); border: 1px dashed var(--bg4);
+  border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;
+  font-family: var(--mono); font-size: 13px; line-height: 2;
+}
+.syn-opt { color: var(--text3); }     /* optional parts */
+.syn-req { color: var(--accent); }    /* required */
+.syn-ph  { color: var(--amber); }     /* placeholder */
+
+/* ── CONSTRAINT TABLE ── */
+.constraint-table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0.75rem 0;
+}
+.constraint-table th {
+  background: var(--bg3); color: var(--text2); font-size: 12px;
+  padding: 9px 14px; text-align: left; border: 1px solid var(--border);
+}
+.constraint-table td {
+  padding: 9px 14px; border: 1px solid var(--border); vertical-align: top;
+}
+.constraint-table td:first-child {
+  font-family: var(--mono); color: var(--accent2); font-weight: 500;
+  white-space: nowrap;
+}
+.constraint-table td:nth-child(2) { color: var(--text2); font-size: 13px; }
+.constraint-table td:nth-child(3) { font-family: var(--mono); font-size: 12.5px; color: var(--green); }
+
+/* ── CHEAT SHEET GRID ── */
+.cheat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+  gap: 10px; margin-top: 0.75rem;
+}
+.cheat-pill {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px; text-align: center;
+  transition: border-color 0.15s;
+}
+.cheat-pill:hover { border-color: var(--accent); }
+.cheat-pill .ckw {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--accent); margin-bottom: 5px;
+}
+.cheat-pill .cdesc { font-size: 11.5px; color: var(--text2); line-height: 1.4; }
+
+/* ── SCROLLSPY ACTIVE ── */
+.nav-link { user-select: none; }
+
+/* ── MOBILE ── */
+.ham { display: none; background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
+@media(max-width:900px){
+  .ham { display: block; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  main { margin-left: 0; padding: 2rem 1.25rem 4rem; }
+  .section-hero::before { display: none; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-section { animation: fadeUp 0.4s ease both; }
+.page-section:nth-child(2) { animation-delay: 0.06s; }
+.page-section:nth-child(3) { animation-delay: 0.12s; }
+.page-section:nth-child(4) { animation-delay: 0.18s; }
+.page-section:nth-child(5) { animation-delay: 0.24s; }
+
+/* ── FOOTER ── */
+footer {
+  margin-left: var(--sidebar-w);
+  background: var(--bg2); border-top: 1px solid var(--border);
+  text-align: center; padding: 1.5rem;
+  font-size: 13px; color: var(--text3);
+}
+@media(max-width:900px){ footer { margin-left: 0; } }
+
+/* ── PROGRESS BAR ── */
+#progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 999; width: 0%; transition: width 0.1s; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- HEADER -->
+<header>
+  <button class="ham" onclick="toggleSidebar()">☰</button>
+  <a class="logo" href="#">
+    <div class="logo-icon">S<span style="color:#388bfd">Q</span></div>
+    SQL <span>Guide</span>
+  </a>
+  <span class="header-tagline">— Complete Reference for Beginners</span>
+  <div class="header-right">
+    <span class="badge">Beginner Friendly</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+
+  <div class="nav-section">
+    <div class="nav-section-title">Getting Started</div>
+    <a class="nav-link active" onclick="goto('intro')"><span class="nav-dot dot-blue"></span>Introduction</a>
+    <a class="nav-link" onclick="goto('intro')"><span class="nav-dot dot-blue"></span>What is SQL?</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">DDL — Define Structure</div>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>Overview</a>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>CREATE TABLE</a>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>ALTER TABLE</a>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>DROP TABLE</a>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>TRUNCATE</a>
+    <a class="nav-link" onclick="goto('ddl')"><span class="nav-dot dot-blue"></span>Constraints</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">DML — Manage Data</div>
+    <a class="nav-link" onclick="goto('dml')"><span class="nav-dot dot-green"></span>Overview</a>
+    <a class="nav-link" onclick="goto('dml')"><span class="nav-dot dot-green"></span>SELECT</a>
+    <a class="nav-link" onclick="goto('dml')"><span class="nav-dot dot-green"></span>INSERT</a>
+    <a class="nav-link" onclick="goto('dml')"><span class="nav-dot dot-green"></span>UPDATE</a>
+    <a class="nav-link" onclick="goto('dml')"><span class="nav-dot dot-green"></span>DELETE</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Clauses</div>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>WHERE</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>ORDER BY</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>GROUP BY</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>HAVING</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>LIMIT / OFFSET</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>DISTINCT</a>
+    <a class="nav-link" onclick="goto('clauses')"><span class="nav-dot dot-amber"></span>Aggregate Functions</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Joins</div>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>Overview</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>INNER JOIN</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>LEFT JOIN</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>RIGHT JOIN</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>FULL OUTER JOIN</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>CROSS JOIN</a>
+    <a class="nav-link" onclick="goto('joins')"><span class="nav-dot dot-purple"></span>SELF JOIN</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Reference</div>
+    <a class="nav-link" onclick="goto('cheat')"><span class="nav-dot dot-pink"></span>Cheat Sheet</a>
+    <a class="nav-link" onclick="goto('cheat')"><span class="nav-dot dot-pink"></span>Query Order</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+
+<!-- ══════════════════════════════════════════
+     INTRO
+═══════════════════════════════════════════ -->
+<section class="page-section" id="intro">
+  <div class="section-hero hero-ddl" data-label="SQL">
+    <div class="section-tag tag-blue">Introduction</div>
+    <h2><span class="section-emoji">🗄️</span> Welcome to SQL</h2>
+    <p>SQL (Structured Query Language) is how you talk to a database. Think of a database as a very organized Excel file — and SQL is the language you use to read, add, edit or delete data in it.</p>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="concept-icon ci-blue">🗃️</div>
+      <div>
+        <h4>Database</h4>
+        <p>A collection of organized tables. Like an Excel workbook.</p>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon ci-amber">📋</div>
+      <div>
+        <h4>Table</h4>
+        <p>A grid of rows and columns. Like one Excel sheet.</p>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon ci-green">📝</div>
+      <div>
+        <h4>Row (Record)</h4>
+        <p>One entry of data. Like one student's information.</p>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon ci-purple">🏷️</div>
+      <div>
+        <h4>Column (Field)</h4>
+        <p>A category of data. Like "Name" or "Age".</p>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon ci-red">🔑</div>
+      <div>
+        <h4>Primary Key</h4>
+        <p>A unique ID for each row. No two rows share it.</p>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon ci-teal">🔗</div>
+      <div>
+        <h4>Foreign Key</h4>
+        <p>A column that links to another table's Primary Key.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <div class="concept-icon ci-blue">📌</div>
+      <div class="cmd-meta">
+        <div class="cmd-title">SQL is divided into 4 main categories</div>
+        <div class="cmd-subtitle">This guide covers DDL, DML, Clauses and Joins</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>Category</th><th>Full Name</th><th>What it does</th><th>Commands</th></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono);font-weight:600">DDL</td><td>Data Definition Language</td><td>Creates / modifies the structure</td><td style="font-family:var(--mono);font-size:12px;color:var(--text2)">CREATE, ALTER, DROP, TRUNCATE</td></tr>
+          <tr><td style="color:var(--green);font-family:var(--mono);font-weight:600">DML</td><td>Data Manipulation Language</td><td>Reads and edits the data</td><td style="font-family:var(--mono);font-size:12px;color:var(--text2)">SELECT, INSERT, UPDATE, DELETE</td></tr>
+          <tr><td style="color:var(--amber);font-family:var(--mono);font-weight:600">Clauses</td><td>Query Clauses</td><td>Filter, sort, group results</td><td style="font-family:var(--mono);font-size:12px;color:var(--text2)">WHERE, ORDER BY, GROUP BY…</td></tr>
+          <tr><td style="color:var(--purple);font-family:var(--mono);font-weight:600">Joins</td><td>Table Joins</td><td>Combine data from multiple tables</td><td style="font-family:var(--mono);font-size:12px;color:var(--text2)">INNER, LEFT, RIGHT, FULL…</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     DDL
+═══════════════════════════════════════════ -->
+<section class="page-section" id="ddl">
+  <div class="section-hero hero-ddl" data-label="DDL">
+    <div class="section-tag tag-blue">DDL</div>
+    <h2><span class="section-emoji">🏗️</span> Data Definition Language</h2>
+    <p>DDL commands define the structure of your database — like creating tables, modifying columns, or deleting tables. These are like the blueprint commands.</p>
+  </div>
+
+  <!-- CREATE TABLE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-blue">CREATE TABLE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Create a new table</div>
+        <div class="cmd-subtitle">Define columns and their data types</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">📋 <span><strong>Analogy:</strong> Like creating a new sheet in Excel and naming each column header.</span></div>
+
+      <div class="syntax-box">
+        <span class="kw">CREATE TABLE</span> <span class="syn-ph">table_name</span> (<br>
+        &nbsp;&nbsp;<span class="syn-ph">column1</span> <span class="syn-ph">datatype</span> <span class="syn-opt">[constraints]</span>,<br>
+        &nbsp;&nbsp;<span class="syn-ph">column2</span> <span class="syn-ph">datatype</span> <span class="syn-opt">[constraints]</span><br>
+        );
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">create_students_table.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">CREATE TABLE</span> <span class="tbl">students</span> (
+  <span class="col">student_id</span>   <span class="tp">INT</span>           <span class="pk">PRIMARY KEY</span>,
+  <span class="col">name</span>         <span class="tp">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+  <span class="col">age</span>          <span class="tp">INT</span>           <span class="kw">CHECK</span> (<span class="col">age</span> <span class="op">&gt;=</span> <span class="num">16</span>),
+  <span class="col">email</span>        <span class="tp">VARCHAR</span>(<span class="num">200</span>) <span class="kw">UNIQUE</span>,
+  <span class="col">city</span>         <span class="tp">VARCHAR</span>(<span class="num">50</span>)  <span class="kw">DEFAULT</span> <span class="val">'Chennai'</span>,
+  <span class="col">enrolled_on</span>  <span class="tp">DATE</span>
+);</pre>
+      </div>
+
+      <h3 class="sub" style="margin-top:1.25rem">Common Data Types</h3>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>Data Type</th><th>Use For</th><th>Example Value</th></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">INT</td><td>Whole numbers</td><td style="font-family:var(--mono)">21, 100, -5</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">DECIMAL(8,2)</td><td>Numbers with decimals</td><td style="font-family:var(--mono)">9750.50</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">VARCHAR(n)</td><td>Text up to n characters</td><td style="font-family:var(--mono)">'Priya', 'Chennai'</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">TEXT</td><td>Long text (no limit)</td><td style="font-family:var(--mono)">'Long description...'</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">DATE</td><td>Date only</td><td style="font-family:var(--mono)">'2024-01-15'</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">DATETIME</td><td>Date + Time</td><td style="font-family:var(--mono)">'2024-01-15 10:30:00'</td></tr>
+          <tr><td style="color:var(--accent);font-family:var(--mono)">BOOLEAN</td><td>True / False</td><td style="font-family:var(--mono)">TRUE, FALSE</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALTER TABLE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-blue">ALTER TABLE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Modify an existing table</div>
+        <div class="cmd-subtitle">Add, remove or change columns</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🔧 <span><strong>Analogy:</strong> Like adding a new column to an existing Excel sheet, or renaming a column header.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">alter_examples.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Add a new column</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">students</span>
+<span class="kw">ADD COLUMN</span> <span class="col">phone</span> <span class="tp">VARCHAR</span>(<span class="num">15</span>);
+
+<span class="cmt">-- Change a column's data type</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">students</span>
+<span class="kw">MODIFY COLUMN</span> <span class="col">age</span> <span class="tp">SMALLINT</span>;
+
+<span class="cmt">-- Rename a column</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">students</span>
+<span class="kw">RENAME COLUMN</span> <span class="col">city</span> <span class="kw">TO</span> <span class="col">hometown</span>;
+
+<span class="cmt">-- Remove a column</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">students</span>
+<span class="kw">DROP COLUMN</span> <span class="col">phone</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- DROP & TRUNCATE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-red">DROP / TRUNCATE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Delete a table or clear all its data</div>
+        <div class="cmd-subtitle">These are destructive — use with extreme care</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">drop_truncate.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- DROP: deletes the table completely (structure + data)</span>
+<span class="kw">DROP TABLE</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- DROP IF EXISTS: safe version (no error if table doesn't exist)</span>
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- TRUNCATE: deletes ALL rows but keeps the table structure</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">students</span>;</pre>
+      </div>
+      <div class="output-table-wrap" style="margin-top:1rem">
+        <table class="output-table">
+          <tr><th>Command</th><th>Removes Data?</th><th>Removes Table?</th><th>Can Rollback?</th></tr>
+          <tr><td style="font-family:var(--mono);color:var(--red)">DROP</td><td>✅ Yes</td><td>✅ Yes</td><td>❌ No</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--red)">TRUNCATE</td><td>✅ Yes</td><td>❌ No</td><td>❌ No</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">DELETE</td><td>✅ Yes</td><td>❌ No</td><td>✅ Yes</td></tr>
+        </table>
+      </div>
+      <div class="warn">⚠️ <span><strong>DROP removes the entire table forever.</strong> TRUNCATE removes all rows but keeps the table shell. Neither can be undone!</span></div>
+    </div>
+  </div>
+
+  <!-- CONSTRAINTS -->
+  <h3 class="sub">Constraints — Rules on Columns</h3>
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-blue">CONSTRAINTS</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Rules that protect your data quality</div>
+        <div class="cmd-subtitle">Applied when creating or altering a table</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <table class="constraint-table">
+        <tr><th>Constraint</th><th>What it means</th><th>Example</th></tr>
+        <tr>
+          <td>PRIMARY KEY</td>
+          <td>Unique identifier for each row. Cannot be NULL.</td>
+          <td>student_id INT PRIMARY KEY</td>
+        </tr>
+        <tr>
+          <td>NOT NULL</td>
+          <td>This column must always have a value.</td>
+          <td>name VARCHAR(100) NOT NULL</td>
+        </tr>
+        <tr>
+          <td>UNIQUE</td>
+          <td>No two rows can have the same value here.</td>
+          <td>email VARCHAR(200) UNIQUE</td>
+        </tr>
+        <tr>
+          <td>CHECK</td>
+          <td>Value must pass a logical condition.</td>
+          <td>age INT CHECK (age &gt;= 16)</td>
+        </tr>
+        <tr>
+          <td>DEFAULT</td>
+          <td>Uses this value if no value is provided.</td>
+          <td>city VARCHAR(50) DEFAULT 'Chennai'</td>
+        </tr>
+        <tr>
+          <td>FOREIGN KEY</td>
+          <td>Links to a Primary Key in another table.</td>
+          <td>dept_id INT REFERENCES departments(id)</td>
+        </tr>
+      </table>
+
+      <div class="code-wrap" style="margin-top:1rem">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">table_with_foreign_key.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">CREATE TABLE</span> <span class="tbl">departments</span> (
+  <span class="col">dept_id</span>   <span class="tp">INT</span>          <span class="pk">PRIMARY KEY</span>,
+  <span class="col">dept_name</span> <span class="tp">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">employees</span> (
+  <span class="col">emp_id</span>   <span class="tp">INT</span>          <span class="pk">PRIMARY KEY</span>,
+  <span class="col">emp_name</span> <span class="tp">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+  <span class="col">salary</span>   <span class="tp">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>) <span class="kw">DEFAULT</span> <span class="num">30000.00</span>,
+  <span class="col">dept_id</span>  <span class="tp">INT</span>,
+  <span class="kw">FOREIGN KEY</span> (<span class="col">dept_id</span>) <span class="kw">REFERENCES</span> <span class="tbl">departments</span>(<span class="col">dept_id</span>)
+);</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     DML
+═══════════════════════════════════════════ -->
+<section class="page-section" id="dml">
+  <div class="section-hero hero-dml" data-label="DML">
+    <div class="section-tag tag-green">DML</div>
+    <h2><span class="section-emoji">✏️</span> Data Manipulation Language</h2>
+    <p>DML commands interact with the actual data inside tables — reading, inserting, updating and deleting records.</p>
+  </div>
+
+  <!-- SELECT -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-green">SELECT</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Read data from a table</div>
+        <div class="cmd-subtitle">The most frequently used SQL command</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🔍 <span><strong>Analogy:</strong> Like using "Find" in Excel — you choose which rows and columns to see.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">select_examples.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Select ALL columns from a table</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- Select specific columns</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">age</span>, <span class="col">city</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- Give a column an alias (rename for display)</span>
+<span class="kw">SELECT</span> <span class="col">name</span> <span class="kw">AS</span> <span class="col">student_name</span>, <span class="col">age</span> <span class="kw">AS</span> <span class="col">student_age</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- Select with calculation</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">marks</span>, (<span class="col">marks</span> <span class="op">* 100 /</span> <span class="num">500</span>) <span class="kw">AS</span> <span class="col">percentage</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>;</pre>
+      </div>
+
+      <div class="output-label">Result of SELECT name, age, city FROM students</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>name</th><th>age</th><th>city</th></tr>
+          <tr><td>Priya</td><td>21</td><td>Chennai</td></tr>
+          <tr><td>Arjun</td><td>22</td><td>Mumbai</td></tr>
+          <tr><td>Meera</td><td>20</td><td>Delhi</td></tr>
+          <tr><td>Rahul</td><td>23</td><td>Bangalore</td></tr>
+          <tr><td>Sneha</td><td>21</td><td>Chennai</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSERT -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-green">INSERT INTO</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Add new rows to a table</div>
+        <div class="cmd-subtitle">One row or multiple rows at once</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">📝 <span><strong>Analogy:</strong> Like filling in a new student registration form and saving it to the spreadsheet.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">insert_examples.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Insert one row</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">students</span> (<span class="col">student_id</span>, <span class="col">name</span>, <span class="col">age</span>, <span class="col">city</span>)
+<span class="kw">VALUES</span> (<span class="num">1</span>, <span class="val">'Priya'</span>, <span class="num">21</span>, <span class="val">'Chennai'</span>);
+
+<span class="cmt">-- Insert multiple rows at once</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">students</span> (<span class="col">student_id</span>, <span class="col">name</span>, <span class="col">age</span>, <span class="col">city</span>)
+<span class="kw">VALUES</span>
+  (<span class="num">2</span>, <span class="val">'Arjun'</span>, <span class="num">22</span>, <span class="val">'Mumbai'</span>),
+  (<span class="num">3</span>, <span class="val">'Meera'</span>, <span class="num">20</span>, <span class="val">'Delhi'</span>),
+  (<span class="num">4</span>, <span class="val">'Rahul'</span>, <span class="num">23</span>, <span class="val">'Bangalore'</span>),
+  (<span class="num">5</span>, <span class="val">'Sneha'</span>, <span class="num">21</span>, <span class="val">'Chennai'</span>);</pre>
+      </div>
+      <div class="tip">💡 <span>The order of values must exactly match the order of columns listed in parentheses.</span></div>
+    </div>
+  </div>
+
+  <!-- UPDATE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">UPDATE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Edit existing data in a table</div>
+        <div class="cmd-subtitle">Always use WHERE to target specific rows</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🖊️ <span><strong>Analogy:</strong> Like finding Priya's row in Excel and changing her city from Chennai to Hyderabad.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">update_examples.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Update one column for a specific row</span>
+<span class="kw">UPDATE</span> <span class="tbl">students</span>
+<span class="kw">SET</span>   <span class="col">city</span> = <span class="val">'Hyderabad'</span>
+<span class="kw">WHERE</span> <span class="col">student_id</span> = <span class="num">1</span>;
+
+<span class="cmt">-- Update multiple columns at once</span>
+<span class="kw">UPDATE</span> <span class="tbl">students</span>
+<span class="kw">SET</span>   <span class="col">city</span> = <span class="val">'Pune'</span>, <span class="col">age</span> = <span class="num">24</span>
+<span class="kw">WHERE</span> <span class="col">name</span> = <span class="val">'Arjun'</span>;
+
+<span class="cmt">-- Update all rows (no WHERE — use carefully!)</span>
+<span class="kw">UPDATE</span> <span class="tbl">students</span>
+<span class="kw">SET</span>   <span class="col">city</span> = <span class="val">'Unknown'</span>;  <span class="cmt">-- changes EVERY row!</span></pre>
+      </div>
+      <div class="warn">⚠️ <span><strong>Always use WHERE with UPDATE!</strong> Without WHERE, every single row in the table gets changed.</span></div>
+    </div>
+  </div>
+
+  <!-- DELETE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-red">DELETE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Remove rows from a table</div>
+        <div class="cmd-subtitle">Always use WHERE unless clearing all rows intentionally</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🗑️ <span><strong>Analogy:</strong> Like selecting a row in Excel and pressing Delete to remove it.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">delete_examples.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Delete one specific row</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">student_id</span> = <span class="num">3</span>;
+
+<span class="cmt">-- Delete rows matching a condition</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">city</span> = <span class="val">'Delhi'</span>;
+
+<span class="cmt">-- Delete ALL rows (keeps the table structure)</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">students</span>;</pre>
+      </div>
+      <div class="warn">⚠️ <span><strong>Always use WHERE with DELETE!</strong> Without WHERE, every row is deleted permanently.</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     CLAUSES
+═══════════════════════════════════════════ -->
+<section class="page-section" id="clauses">
+  <div class="section-hero hero-cls" data-label="Clauses">
+    <div class="section-tag tag-amber">Clauses</div>
+    <h2><span class="section-emoji">🎛️</span> SQL Clauses</h2>
+    <p>Clauses are added to your SELECT queries to filter, sort, group, and limit results. They're the power tools that make SQL so flexible.</p>
+  </div>
+
+  <!-- WHERE -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">WHERE</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Filter rows by a condition</div>
+        <div class="cmd-subtitle">Like clicking the "Filter" button in Excel</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">where_clause.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Simple condition</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">city</span> = <span class="val">'Chennai'</span>;
+
+<span class="cmt">-- Number comparison</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">age</span> <span class="op">&gt;</span> <span class="num">20</span>;
+
+<span class="cmt">-- AND: both conditions must be true</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">city</span> = <span class="val">'Chennai'</span> <span class="kw">AND</span> <span class="col">age</span> <span class="op">&gt;=</span> <span class="num">21</span>;
+
+<span class="cmt">-- OR: at least one condition must be true</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">city</span> = <span class="val">'Chennai'</span> <span class="kw">OR</span> <span class="col">city</span> = <span class="val">'Mumbai'</span>;
+
+<span class="cmt">-- NOT: negate a condition</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE NOT</span> <span class="col">city</span> = <span class="val">'Delhi'</span>;
+
+<span class="cmt">-- IN: match a list of values</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">city</span> <span class="kw">IN</span> (<span class="val">'Chennai'</span>, <span class="val">'Mumbai'</span>, <span class="val">'Delhi'</span>);
+
+<span class="cmt">-- BETWEEN: value in a range (inclusive)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">age</span> <span class="kw">BETWEEN</span> <span class="num">18</span> <span class="kw">AND</span> <span class="num">25</span>;
+
+<span class="cmt">-- LIKE: search by partial text (% is wildcard)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">name</span> <span class="kw">LIKE</span> <span class="val">'P%'</span>;     <span class="cmt">-- starts with P</span>
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">name</span> <span class="kw">LIKE</span> <span class="val">'%a'</span>;     <span class="cmt">-- ends with a</span>
+
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">name</span> <span class="kw">LIKE</span> <span class="val">'%ri%'</span>;   <span class="cmt">-- contains 'ri'</span>
+
+<span class="cmt">-- IS NULL: find rows with no value</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">WHERE</span> <span class="col">email</span> <span class="kw">IS NULL</span>;</pre>
+      </div>
+
+      <div class="output-label">Comparison Operators Quick Reference</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">=</td><td>Equal to</td><td style="font-family:var(--mono)">WHERE age = 21</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">!= or &lt;&gt;</td><td>Not equal to</td><td style="font-family:var(--mono)">WHERE city != 'Delhi'</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">&gt;</td><td>Greater than</td><td style="font-family:var(--mono)">WHERE age &gt; 20</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">&lt;</td><td>Less than</td><td style="font-family:var(--mono)">WHERE age &lt; 25</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">&gt;=</td><td>Greater than or equal</td><td style="font-family:var(--mono)">WHERE age &gt;= 18</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--amber)">&lt;=</td><td>Less than or equal</td><td style="font-family:var(--mono)">WHERE marks &lt;= 100</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER BY -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">ORDER BY</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Sort results in a specific order</div>
+        <div class="cmd-subtitle">ASC = A to Z (default) · DESC = Z to A</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">↕️ <span><strong>Analogy:</strong> Like clicking a column header in Excel to sort rows alphabetically or numerically.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">order_by.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Sort by name A → Z</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">ORDER BY</span> <span class="col">name</span> <span class="kw">ASC</span>;
+
+<span class="cmt">-- Sort by age highest first</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">ORDER BY</span> <span class="col">age</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- Sort by city first, then by name within each city</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">ORDER BY</span> <span class="col">city</span> <span class="kw">ASC</span>, <span class="col">name</span> <span class="kw">ASC</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISTINCT -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">DISTINCT</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Remove duplicate values</div>
+        <div class="cmd-subtitle">Show each unique value only once</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">distinct.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Get unique cities (no duplicates)</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">city</span> <span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- Count unique cities</span>
+<span class="kw">SELECT COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">city</span>) <span class="kw">AS</span> <span class="col">unique_cities</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIMIT & OFFSET -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">LIMIT / OFFSET</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Control how many rows to return</div>
+        <div class="cmd-subtitle">Great for pagination and previewing data</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">limit_offset.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Show only the first 5 rows</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span> <span class="kw">LIMIT</span> <span class="num">5</span>;
+
+<span class="cmt">-- Skip first 5, show next 5 (page 2)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">LIMIT</span> <span class="num">5</span> <span class="kw">OFFSET</span> <span class="num">5</span>;
+
+<span class="cmt">-- Top 3 oldest students</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">age</span>
+<span class="kw">FROM</span> <span class="tbl">students</span>
+<span class="kw">ORDER BY</span> <span class="col">age</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">3</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP BY -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">GROUP BY</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Group rows and calculate summaries</div>
+        <div class="cmd-subtitle">Like pivot tables in Excel</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">📊 <span><strong>Analogy:</strong> "How many students are from each city?" — GROUP BY bunches rows together so you can count, sum or average per group.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">group_by.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Count students from each city</span>
+<span class="kw">SELECT</span> <span class="col">city</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">total_students</span>
+<span class="kw">FROM</span>   <span class="tbl">students</span>
+<span class="kw">GROUP BY</span> <span class="col">city</span>;
+
+<span class="cmt">-- Average age per city</span>
+<span class="kw">SELECT</span> <span class="col">city</span>, <span class="fn">AVG</span>(<span class="col">age</span>) <span class="kw">AS</span> <span class="col">avg_age</span>
+<span class="kw">FROM</span>   <span class="tbl">students</span>
+<span class="kw">GROUP BY</span> <span class="col">city</span>
+<span class="kw">ORDER BY</span> <span class="col">avg_age</span> <span class="kw">DESC</span>;</pre>
+      </div>
+
+      <div class="output-label">Result</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>city</th><th>total_students</th></tr>
+          <tr><td>Chennai</td><td>2</td></tr>
+          <tr><td>Mumbai</td><td>1</td></tr>
+          <tr><td>Delhi</td><td>1</td></tr>
+          <tr><td>Bangalore</td><td>1</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HAVING -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">HAVING</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Filter groups after GROUP BY</div>
+        <div class="cmd-subtitle">WHERE filters rows · HAVING filters groups</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🎯 <span><strong>Analogy:</strong> "Show me only cities that have MORE than 1 student." — HAVING is WHERE applied after grouping.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">having_clause.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Cities with more than 1 student</span>
+<span class="kw">SELECT</span>   <span class="col">city</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">total</span>
+<span class="kw">FROM</span>     <span class="tbl">students</span>
+<span class="kw">GROUP BY</span> <span class="col">city</span>
+<span class="kw">HAVING</span>   <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="num">1</span>;
+
+<span class="cmt">-- Departments where avg salary > 50000</span>
+<span class="kw">SELECT</span>   <span class="col">dept_id</span>, <span class="fn">AVG</span>(<span class="col">salary</span>) <span class="kw">AS</span> <span class="col">avg_salary</span>
+<span class="kw">FROM</span>     <span class="tbl">employees</span>
+<span class="kw">GROUP BY</span> <span class="col">dept_id</span>
+<span class="kw">HAVING</span>   <span class="fn">AVG</span>(<span class="col">salary</span>) <span class="op">&gt;</span> <span class="num">50000</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGGREGATE FUNCTIONS -->
+  <h3 class="sub">Aggregate Functions</h3>
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-amber">COUNT · SUM · AVG · MIN · MAX</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Calculate totals, averages, and extremes</div>
+        <div class="cmd-subtitle">Used with SELECT and GROUP BY</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">aggregate_functions.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- COUNT: how many rows?</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>)        <span class="kw">AS</span> <span class="col">total_students</span>   <span class="kw">FROM</span> <span class="tbl">students</span>;
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="col">email</span>)    <span class="kw">AS</span> <span class="col">with_email</span>       <span class="kw">FROM</span> <span class="tbl">students</span>;  <span class="cmt">-- excludes NULLs</span>
+
+<span class="cmt">-- SUM: total of a numeric column</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span>(<span class="col">salary</span>)    <span class="kw">AS</span> <span class="col">total_payroll</span>    <span class="kw">FROM</span> <span class="tbl">employees</span>;
+
+<span class="cmt">-- AVG: average of a numeric column</span>
+<span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">salary</span>)    <span class="kw">AS</span> <span class="col">average_salary</span>   <span class="kw">FROM</span> <span class="tbl">employees</span>;
+
+<span class="cmt">-- MIN and MAX</span>
+<span class="kw">SELECT</span> <span class="fn">MIN</span>(<span class="col">age</span>)       <span class="kw">AS</span> <span class="col">youngest</span>         <span class="kw">FROM</span> <span class="tbl">students</span>;
+<span class="kw">SELECT</span> <span class="fn">MAX</span>(<span class="col">age</span>)       <span class="kw">AS</span> <span class="col">oldest</span>           <span class="kw">FROM</span> <span class="tbl">students</span>;
+
+<span class="cmt">-- Multiple aggregates in one query</span>
+<span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(<span class="op">*</span>)     <span class="kw">AS</span> <span class="col">total</span>,
+  <span class="fn">AVG</span>(<span class="col">salary</span>)  <span class="kw">AS</span> <span class="col">avg_salary</span>,
+  <span class="fn">MIN</span>(<span class="col">salary</span>)  <span class="kw">AS</span> <span class="col">min_salary</span>,
+  <span class="fn">MAX</span>(<span class="col">salary</span>)  <span class="kw">AS</span> <span class="col">max_salary</span>
+<span class="kw">FROM</span> <span class="tbl">employees</span>;</pre>
+      </div>
+
+      <div class="output-label">Sample result</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>total</th><th>avg_salary</th><th>min_salary</th><th>max_salary</th></tr>
+          <tr><td>25</td><td>47500.00</td><td>28000.00</td><td>95000.00</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     JOINS
+═══════════════════════════════════════════ -->
+<section class="page-section" id="joins">
+  <div class="section-hero hero-join" data-label="JOIN">
+    <div class="section-tag tag-purple">Joins</div>
+    <h2><span class="section-emoji">🔗</span> SQL Joins</h2>
+    <p>Joins combine rows from two or more tables based on a related column. When data is split across tables, joins bring it back together.</p>
+  </div>
+
+  <!-- JOIN DIAGRAM -->
+  <div class="join-diagram-grid">
+    <div class="join-card">
+      <svg width="90" height="60" viewBox="0 0 90 60">
+        <circle cx="32" cy="30" r="26" fill="#388bfd" opacity="0.2" stroke="#388bfd" stroke-width="1.5"/>
+        <circle cx="58" cy="30" r="26" fill="#bc8cff" opacity="0.2" stroke="#bc8cff" stroke-width="1.5"/>
+        <ellipse cx="45" cy="30" rx="13" ry="22" fill="#7b5ea7" opacity="0.6"/>
+      </svg>
+      <h4 style="color:var(--accent)">INNER JOIN</h4>
+      <p>Only matching rows in both tables</p>
+    </div>
+    <div class="join-card">
+      <svg width="90" height="60" viewBox="0 0 90 60">
+        <circle cx="32" cy="30" r="26" fill="#388bfd" opacity="0.45" stroke="#388bfd" stroke-width="1.5"/>
+        <circle cx="58" cy="30" r="26" fill="#bc8cff" opacity="0.15" stroke="#bc8cff" stroke-width="1.5"/>
+        <ellipse cx="45" cy="30" rx="13" ry="22" fill="#388bfd" opacity="0.5"/>
+      </svg>
+      <h4 style="color:var(--accent)">LEFT JOIN</h4>
+      <p>All left rows + matching right rows</p>
+    </div>
+    <div class="join-card">
+      <svg width="90" height="60" viewBox="0 0 90 60">
+        <circle cx="32" cy="30" r="26" fill="#388bfd" opacity="0.15" stroke="#388bfd" stroke-width="1.5"/>
+        <circle cx="58" cy="30" r="26" fill="#bc8cff" opacity="0.45" stroke="#bc8cff" stroke-width="1.5"/>
+        <ellipse cx="45" cy="30" rx="13" ry="22" fill="#bc8cff" opacity="0.5"/>
+      </svg>
+      <h4 style="color:var(--purple)">RIGHT JOIN</h4>
+      <p>All right rows + matching left rows</p>
+    </div>
+    <div class="join-card">
+      <svg width="90" height="60" viewBox="0 0 90 60">
+        <circle cx="32" cy="30" r="26" fill="#388bfd" opacity="0.4" stroke="#388bfd" stroke-width="1.5"/>
+        <circle cx="58" cy="30" r="26" fill="#bc8cff" opacity="0.4" stroke="#bc8cff" stroke-width="1.5"/>
+      </svg>
+      <h4 style="color:var(--purple)">FULL OUTER JOIN</h4>
+      <p>All rows from both tables</p>
+    </div>
+  </div>
+
+  <!-- Sample Data Box -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <div class="concept-icon ci-teal">📋</div>
+      <div class="cmd-meta">
+        <div class="cmd-title">Sample tables used in all Join examples below</div>
+        <div class="cmd-subtitle">students table joined with courses table via student_id</div>
+      </div>
+    </div>
+    <div class="cmd-body" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="output-label">students table</div>
+        <div class="output-table-wrap">
+          <table class="output-table">
+            <tr><th>student_id</th><th>name</th><th>city</th></tr>
+            <tr><td>1</td><td>Priya</td><td>Chennai</td></tr>
+            <tr><td>2</td><td>Arjun</td><td>Mumbai</td></tr>
+            <tr><td>3</td><td>Meera</td><td>Delhi</td></tr>
+            <tr><td>4</td><td>Rahul</td><td>Bangalore</td></tr>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="output-label">courses table</div>
+        <div class="output-table-wrap">
+          <table class="output-table">
+            <tr><th>course_id</th><th>student_id</th><th>course_name</th></tr>
+            <tr><td>101</td><td>1</td><td>Data Science</td></tr>
+            <tr><td>102</td><td>2</td><td>Web Design</td></tr>
+            <tr><td>103</td><td>1</td><td>Python Basics</td></tr>
+            <tr><td>104</td><td>5</td><td>SQL Advanced</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 1.25rem 1rem"><div class="tip">💡 <span>Priya (id=1) is enrolled in 2 courses. Rahul (id=4) has no courses. course_id 104 has student_id=5 which doesn't exist in students table.</span></div></div>
+  </div>
+
+  <!-- INNER JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">INNER JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Only rows with a match in BOTH tables</div>
+        <div class="cmd-subtitle">Unmatched rows are excluded from results</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🤝 <span><strong>Analogy:</strong> Two guest lists — show only people who appear on BOTH lists.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">inner_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">name</span>,
+  <span class="tbl">s</span>.<span class="col">city</span>,
+  <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span>       <span class="tbl">students</span>  <span class="kw">AS</span> <span class="tbl">s</span>
+<span class="kw">INNER JOIN</span> <span class="tbl">courses</span>   <span class="kw">AS</span> <span class="tbl">c</span>
+       <span class="kw">ON</span>  <span class="tbl">s</span>.<span class="col">student_id</span> = <span class="tbl">c</span>.<span class="col">student_id</span>;</pre>
+      </div>
+
+      <div class="output-label">Result — Rahul excluded (no courses), course_id 104 excluded (no matching student)</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>name</th><th>city</th><th>course_name</th></tr>
+          <tr><td>Priya</td><td>Chennai</td><td>Data Science</td></tr>
+          <tr><td>Priya</td><td>Chennai</td><td>Python Basics</td></tr>
+          <tr><td>Arjun</td><td>Mumbai</td><td>Web Design</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEFT JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">LEFT JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">All rows from the LEFT table + matching right rows</div>
+        <div class="cmd-subtitle">Non-matching right values appear as NULL</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">⬅️ <span><strong>Analogy:</strong> Show ALL students, and next to them show their course if they have one — or leave it blank (NULL) if they don't.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">left_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">name</span>,
+  <span class="tbl">s</span>.<span class="col">city</span>,
+  <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span>      <span class="tbl">students</span>  <span class="kw">AS</span> <span class="tbl">s</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">courses</span>   <span class="kw">AS</span> <span class="tbl">c</span>
+      <span class="kw">ON</span>  <span class="tbl">s</span>.<span class="col">student_id</span> = <span class="tbl">c</span>.<span class="col">student_id</span>;</pre>
+      </div>
+
+      <div class="output-label">Result — Rahul appears with NULL (no courses)</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>name</th><th>city</th><th>course_name</th></tr>
+          <tr><td>Priya</td><td>Chennai</td><td>Data Science</td></tr>
+          <tr><td>Priya</td><td>Chennai</td><td>Python Basics</td></tr>
+          <tr><td>Arjun</td><td>Mumbai</td><td>Web Design</td></tr>
+          <tr><td>Meera</td><td>Delhi</td><td class="null-val">NULL</td></tr>
+          <tr class="highlight-row"><td>Rahul</td><td>Bangalore</td><td class="null-val">NULL</td></tr>
+        </table>
+      </div>
+      <div class="tip">💡 <span>LEFT JOIN is the most commonly used join. Use it when you want all records from one table even if there's no match.</span></div>
+    </div>
+  </div>
+
+  <!-- RIGHT JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">RIGHT JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">All rows from the RIGHT table + matching left rows</div>
+        <div class="cmd-subtitle">Mirror image of LEFT JOIN</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">right_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">name</span>,
+  <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span>       <span class="tbl">students</span>  <span class="kw">AS</span> <span class="tbl">s</span>
+<span class="kw">RIGHT JOIN</span> <span class="tbl">courses</span>   <span class="kw">AS</span> <span class="tbl">c</span>
+       <span class="kw">ON</span>  <span class="tbl">s</span>.<span class="col">student_id</span> = <span class="tbl">c</span>.<span class="col">student_id</span>;</pre>
+      </div>
+
+      <div class="output-label">Result — course_id 104 appears with NULL name (student doesn't exist)</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>name</th><th>course_name</th></tr>
+          <tr><td>Priya</td><td>Data Science</td></tr>
+          <tr><td>Arjun</td><td>Web Design</td></tr>
+          <tr><td>Priya</td><td>Python Basics</td></tr>
+          <tr class="highlight-row"><td class="null-val">NULL</td><td>SQL Advanced</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL OUTER JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">FULL OUTER JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">All rows from BOTH tables</div>
+        <div class="cmd-subtitle">Unmatched rows from either side show as NULL</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🌐 <span><strong>Analogy:</strong> Show ALL students and ALL courses — match them where possible, fill NULL where there's no match on either side.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">full_outer_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">name</span>,
+  <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span>            <span class="tbl">students</span>  <span class="kw">AS</span> <span class="tbl">s</span>
+<span class="kw">FULL OUTER JOIN</span> <span class="tbl">courses</span>   <span class="kw">AS</span> <span class="tbl">c</span>
+            <span class="kw">ON</span>  <span class="tbl">s</span>.<span class="col">student_id</span> = <span class="tbl">c</span>.<span class="col">student_id</span>;
+
+<span class="cmt">-- MySQL doesn't support FULL OUTER JOIN directly.</span>
+<span class="cmt">-- Workaround: LEFT JOIN UNION RIGHT JOIN</span>
+<span class="kw">SELECT</span> <span class="tbl">s</span>.<span class="col">name</span>, <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span> <span class="tbl">students</span> <span class="tbl">s</span> <span class="kw">LEFT JOIN</span> <span class="tbl">courses</span> <span class="tbl">c</span> <span class="kw">ON</span> <span class="tbl">s</span>.<span class="col">student_id</span>=<span class="tbl">c</span>.<span class="col">student_id</span>
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> <span class="tbl">s</span>.<span class="col">name</span>, <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span> <span class="tbl">students</span> <span class="tbl">s</span> <span class="kw">RIGHT JOIN</span> <span class="tbl">courses</span> <span class="tbl">c</span> <span class="kw">ON</span> <span class="tbl">s</span>.<span class="col">student_id</span>=<span class="tbl">c</span>.<span class="col">student_id</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROSS JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">CROSS JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">Every row from left × every row from right</div>
+        <div class="cmd-subtitle">Creates all possible combinations</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🎲 <span><strong>Analogy:</strong> You have 3 shirt sizes and 4 colors — CROSS JOIN gives you all 12 combinations (3×4).</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">cross_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Every student paired with every course (useful for scheduling)</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">name</span>,
+  <span class="tbl">c</span>.<span class="col">course_name</span>
+<span class="kw">FROM</span>        <span class="tbl">students</span>  <span class="tbl">s</span>
+<span class="kw">CROSS JOIN</span> <span class="tbl">courses</span>   <span class="tbl">c</span>;
+<span class="cmt">-- 4 students × 4 courses = 16 rows returned</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELF JOIN -->
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <span class="cmd-keyword kw-purple">SELF JOIN</span>
+      <div class="cmd-meta">
+        <div class="cmd-title">A table joined with itself</div>
+        <div class="cmd-subtitle">Useful for hierarchical or comparative data</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="analogy">🪞 <span><strong>Analogy:</strong> An employee table where each employee has a "manager_id" that refers back to another employee in the same table.</span></div>
+
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">self_join.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- employees table has: emp_id, name, manager_id</span>
+<span class="cmt">-- manager_id references emp_id in the SAME table</span>
+
+<span class="kw">SELECT</span>
+  <span class="tbl">e</span>.<span class="col">name</span>       <span class="kw">AS</span> <span class="col">employee</span>,
+  <span class="tbl">m</span>.<span class="col">name</span>       <span class="kw">AS</span> <span class="col">manager</span>
+<span class="kw">FROM</span>      <span class="tbl">employees</span>  <span class="kw">AS</span> <span class="tbl">e</span>
+<span class="kw">LEFT JOIN</span> <span class="tbl">employees</span>  <span class="kw">AS</span> <span class="tbl">m</span>
+      <span class="kw">ON</span>  <span class="tbl">e</span>.<span class="col">manager_id</span> = <span class="tbl">m</span>.<span class="col">emp_id</span>;</pre>
+      </div>
+
+      <div class="output-label">Result</div>
+      <div class="output-table-wrap">
+        <table class="output-table">
+          <tr><th>employee</th><th>manager</th></tr>
+          <tr><td>Arjun</td><td>Priya</td></tr>
+          <tr><td>Meera</td><td>Priya</td></tr>
+          <tr><td>Rahul</td><td>Arjun</td></tr>
+          <tr><td>Priya</td><td class="null-val">NULL (top level)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     CHEAT SHEET
+═══════════════════════════════════════════ -->
+<section class="page-section" id="cheat">
+  <div class="section-hero hero-join" data-label="REF">
+    <div class="section-tag tag-purple">Reference</div>
+    <h2><span class="section-emoji">📋</span> Quick Cheat Sheet</h2>
+    <p>All SQL commands and their purpose at a glance. Bookmark this page and refer back anytime!</p>
+  </div>
+
+  <h3 class="sub">DDL Commands</h3>
+  <div class="cheat-grid">
+    <div class="cheat-pill"><div class="ckw">CREATE TABLE</div><div class="cdesc">Make a new table with columns</div></div>
+    <div class="cheat-pill"><div class="ckw">ALTER TABLE</div><div class="cdesc">Add / change / remove columns</div></div>
+    <div class="cheat-pill"><div class="ckw">DROP TABLE</div><div class="cdesc">Delete table + all data forever</div></div>
+    <div class="cheat-pill"><div class="ckw">TRUNCATE</div><div class="cdesc">Delete all rows, keep table</div></div>
+    <div class="cheat-pill"><div class="ckw">PRIMARY KEY</div><div class="cdesc">Unique row identifier</div></div>
+    <div class="cheat-pill"><div class="ckw">FOREIGN KEY</div><div class="cdesc">Link to another table</div></div>
+    <div class="cheat-pill"><div class="ckw">NOT NULL</div><div class="cdesc">Value is required</div></div>
+    <div class="cheat-pill"><div class="ckw">UNIQUE</div><div class="cdesc">No duplicate values</div></div>
+    <div class="cheat-pill"><div class="ckw">DEFAULT</div><div class="cdesc">Fallback value</div></div>
+    <div class="cheat-pill"><div class="ckw">CHECK</div><div class="cdesc">Value must pass rule</div></div>
+  </div>
+
+  <h3 class="sub">DML Commands</h3>
+  <div class="cheat-grid">
+    <div class="cheat-pill"><div class="ckw">SELECT</div><div class="cdesc">Read / query data</div></div>
+    <div class="cheat-pill"><div class="ckw">INSERT INTO</div><div class="cdesc">Add new rows</div></div>
+    <div class="cheat-pill"><div class="ckw">UPDATE</div><div class="cdesc">Edit existing rows</div></div>
+    <div class="cheat-pill"><div class="ckw">DELETE</div><div class="cdesc">Remove specific rows</div></div>
+  </div>
+
+  <h3 class="sub">Clause Commands</h3>
+  <div class="cheat-grid">
+    <div class="cheat-pill"><div class="ckw">WHERE</div><div class="cdesc">Filter rows by condition</div></div>
+    <div class="cheat-pill"><div class="ckw">AND / OR</div><div class="cdesc">Combine conditions</div></div>
+    <div class="cheat-pill"><div class="ckw">NOT</div><div class="cdesc">Negate a condition</div></div>
+    <div class="cheat-pill"><div class="ckw">LIKE</div><div class="cdesc">Search partial text with %</div></div>
+    <div class="cheat-pill"><div class="ckw">IN</div><div class="cdesc">Match a list of values</div></div>
+    <div class="cheat-pill"><div class="ckw">BETWEEN</div><div class="cdesc">Range of values</div></div>
+    <div class="cheat-pill"><div class="ckw">IS NULL</div><div class="cdesc">Find empty values</div></div>
+    <div class="cheat-pill"><div class="ckw">DISTINCT</div><div class="cdesc">Remove duplicates</div></div>
+    <div class="cheat-pill"><div class="ckw">ORDER BY</div><div class="cdesc">Sort ASC or DESC</div></div>
+    <div class="cheat-pill"><div class="ckw">LIMIT</div><div class="cdesc">Show N rows only</div></div>
+    <div class="cheat-pill"><div class="ckw">OFFSET</div><div class="cdesc">Skip N rows (pagination)</div></div>
+    <div class="cheat-pill"><div class="ckw">GROUP BY</div><div class="cdesc">Group rows to summarize</div></div>
+    <div class="cheat-pill"><div class="ckw">HAVING</div><div class="cdesc">Filter after grouping</div></div>
+    <div class="cheat-pill"><div class="ckw">COUNT()</div><div class="cdesc">Count rows</div></div>
+    <div class="cheat-pill"><div class="ckw">SUM()</div><div class="cdesc">Total of a column</div></div>
+    <div class="cheat-pill"><div class="ckw">AVG()</div><div class="cdesc">Average of a column</div></div>
+    <div class="cheat-pill"><div class="ckw">MIN()</div><div class="cdesc">Smallest value</div></div>
+    <div class="cheat-pill"><div class="ckw">MAX()</div><div class="cdesc">Largest value</div></div>
+  </div>
+
+  <h3 class="sub">Join Types</h3>
+  <div class="cheat-grid">
+    <div class="cheat-pill"><div class="ckw">INNER JOIN</div><div class="cdesc">Only matching rows both sides</div></div>
+    <div class="cheat-pill"><div class="ckw">LEFT JOIN</div><div class="cdesc">All left + matching right</div></div>
+    <div class="cheat-pill"><div class="ckw">RIGHT JOIN</div><div class="cdesc">All right + matching left</div></div>
+    <div class="cheat-pill"><div class="ckw">FULL OUTER</div><div class="cdesc">All rows from both tables</div></div>
+    <div class="cheat-pill"><div class="ckw">CROSS JOIN</div><div class="cdesc">Every combination of rows</div></div>
+    <div class="cheat-pill"><div class="ckw">SELF JOIN</div><div class="cdesc">Table joined with itself</div></div>
+  </div>
+
+  <h3 class="sub">Query Execution Order</h3>
+  <div class="cmd-block">
+    <div class="cmd-body">
+      <div class="analogy" style="margin-bottom:1rem">📌 <span><strong>Important:</strong> SQL executes your query in a specific internal order — even though you write SELECT first. Understanding this prevents confusion!</span></div>
+      <div style="overflow-x:auto">
+      <table class="output-table" style="min-width:600px">
+        <tr><th>#</th><th>Clause</th><th>What happens</th></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">1</td><td style="font-family:var(--mono);color:var(--accent)">FROM</td><td>Which table(s) to read</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">2</td><td style="font-family:var(--mono);color:var(--accent)">JOIN</td><td>Combine tables</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">3</td><td style="font-family:var(--mono);color:var(--amber)">WHERE</td><td>Filter rows before grouping</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">4</td><td style="font-family:var(--mono);color:var(--amber)">GROUP BY</td><td>Group the filtered rows</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">5</td><td style="font-family:var(--mono);color:var(--amber)">HAVING</td><td>Filter the groups</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">6</td><td style="font-family:var(--mono);color:var(--green)">SELECT</td><td>Choose which columns to show</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">7</td><td style="font-family:var(--mono);color:var(--green)">DISTINCT</td><td>Remove duplicates</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">8</td><td style="font-family:var(--mono);color:var(--purple)">ORDER BY</td><td>Sort the results</td></tr>
+        <tr><td style="font-family:var(--mono);color:var(--text3)">9</td><td style="font-family:var(--mono);color:var(--purple)">LIMIT</td><td>Return only N rows</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL EXAMPLE QUERY -->
+  <h3 class="sub">Putting It All Together — Full Example</h3>
+  <div class="cmd-block">
+    <div class="cmd-top">
+      <div class="concept-icon ci-purple">🏆</div>
+      <div class="cmd-meta">
+        <div class="cmd-title">A real-world query using everything you've learned</div>
+        <div class="cmd-subtitle">Students enrolled in courses, grouped by city, filtered by count</div>
+      </div>
+    </div>
+    <div class="cmd-body">
+      <div class="code-wrap">
+        <div class="code-bar">
+          <div class="code-dots"><span class="cd1"></span><span class="cd2"></span><span class="cd3"></span></div>
+          <span class="code-label">full_example_query.sql</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><span class="cmt">-- Find cities where more than 1 student is enrolled in a course,</span>
+<span class="cmt">-- show the city, number of enrolled students, and average age</span>
+
+<span class="kw">SELECT</span>
+  <span class="tbl">s</span>.<span class="col">city</span>,
+  <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="tbl">s</span>.<span class="col">student_id</span>) <span class="kw">AS</span> <span class="col">enrolled_students</span>,
+  <span class="fn">AVG</span>(<span class="tbl">s</span>.<span class="col">age</span>)                     <span class="kw">AS</span> <span class="col">average_age</span>
+
+<span class="kw">FROM</span>       <span class="tbl">students</span>  <span class="kw">AS</span> <span class="tbl">s</span>
+<span class="kw">INNER JOIN</span> <span class="tbl">courses</span>   <span class="kw">AS</span> <span class="tbl">c</span>
+       <span class="kw">ON</span>  <span class="tbl">s</span>.<span class="col">student_id</span> = <span class="tbl">c</span>.<span class="col">student_id</span>
+
+<span class="kw">WHERE</span>    <span class="tbl">s</span>.<span class="col">age</span> <span class="kw">BETWEEN</span> <span class="num">18</span> <span class="kw">AND</span> <span class="num">30</span>
+
+<span class="kw">GROUP BY</span> <span class="tbl">s</span>.<span class="col">city</span>
+<span class="kw">HAVING</span>   <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="tbl">s</span>.<span class="col">student_id</span>) <span class="op">&gt;</span> <span class="num">1</span>
+
+<span class="kw">ORDER BY</span> <span class="col">enrolled_students</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>    <span class="num">10</span>;</pre>
+      </div>
+      <div class="tip">💡 <span>This single query uses: SELECT, INNER JOIN, WHERE, BETWEEN, GROUP BY, HAVING, COUNT, AVG, DISTINCT, ORDER BY and LIMIT — all in one!</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>SQL Complete Guide · Built for beginners with ❤️ · Practice makes perfect — try every query yourself!</p>
+</footer>
+
+<script>
+function goto(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+
+// Progress bar
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+});
+
+// Scrollspy
+const sections = ['intro','ddl','dml','clauses','joins','cheat'];
+const links = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = 'intro';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 120) current = id;
+  });
+});
+</script>
+</body>
+</html>
